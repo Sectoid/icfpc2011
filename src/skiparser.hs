@@ -5,30 +5,43 @@ import qualified Data.Sequence as S
 
 import Control.Monad.ST
 import Data.Array.ST
+import Text.Regex.Posix
 
 import Types
 import Interaction
 
+type Action s a = STArray s Int (Int, Value) -> ST s (a -> a)
+
+-- Not sure actually is there any sense using regex for an exact match
+matchCard :: String -> Card -> Bool
+matchCard s c = s =~ matchCard' c
+  where matchCard' c = '^' : show c ++ "$"
+
+parseCard :: String -> Card
+parseCard s | matchCard s I      = I
+            | matchCard s S      = S
+            | matchCard s K      = K
+            | matchCard s Zero   = Zero
+            | matchCard s Succ   = Succ
+            | matchCard s Dbl    = Dbl
+            | matchCard s Get    = Get
+            | matchCard s Put    = Put
+            | matchCard s Inc    = Inc
+            | matchCard s Dec    = Dec
+            | matchCard s Attack = Attack
+            | matchCard s Help   = Help
+            | matchCard s Copy   = Copy
+            | matchCard s Revive = Revive
+            | matchCard s Zombie = Zombie
+            | otherwise = error "Card type not supported"
+
 makeArray :: Int -> Int -> a -> ST s (STArray s Int a)
 makeArray lower upper val = newArray (lower, upper) val
 
+-- Initial state for the mutable boxed STArray
 cells = makeArray 0 255 (10000, CardValue I)
 
-update = do arr <- cells
-            a <- readArray arr 1
-            writeArray arr 1 (5000, CardValue I)
-            b <- readArray arr 1
-            return (a, b)
-
-data Function a b c d = Value   a
-                      | Unary   (a -> b)
-                      | Binary  (a -> b -> c)
-                      | Ternary (a -> b -> c -> d)
-                        
-apply (Unary f)   x = Value  (f x)
-apply (Binary f)  x = Unary  (f x)
-apply (Ternary f) x = Binary (f x)
-
+-- Evaluation of some of the combinators
 i :: a -> a
 i = id
 
@@ -41,7 +54,7 @@ succ = (+1)
 dbl :: Integer -> Integer
 dbl = (*2)
 
--- State
+-- Maybe should be done in ST too, nevermind in doesn't write
 get :: Int -> Value
 get n = snd $ runST ( do arr <- cells
                          readArray arr n
@@ -55,38 +68,38 @@ s f g x = f x (g x)
 
 k :: a -> b -> a
 k = const
+        
+inc :: Int -> Action s a
+inc n arr = do (vit, val) <- readArray arr n
+               writeArray arr n (vit + 1, val)
+               return i
 
-inc :: Int -> (a -> a)
-inc n = runST ( do arr <- cells
-                   (vit, val) <- readArray arr n
-                   writeArray arr n (vit + 1, val)
-                   return i
-              )
+dec :: Int -> Action s a
+dec n arr = do (vit, val) <- readArray arr n
+               writeArray arr n (vit - 1, val)
+               return i
 
-dec :: Int -> (a -> a)
-dec n = runST ( do arr <- cells
-                   (vit, val) <- readArray arr n
-                   writeArray arr n (vit - 1, val)
-                   return i
-              )
+-- Samplt mutating process. Actually this will be in IO rather than ST
+compute = runST ( do arr <- cells :: ST s (STArray s Int (Int, Value))
+                     inc 10 arr
+                     inc 10 arr
+                     revive 10 arr
+                     readArray arr 10
+                )
+
 -- attack
 -- help
 -- copy
 
-revive' :: Int -> Int
-revive' n | n <= 0    = 1
-          | otherwise = n
-
-revive :: Int -> (a -> a)
-revive n = runST ( do arr <- cells
-                      (vit, val) <- readArray arr n
-                      writeArray arr n (revive' vit, val)
-                      return i
-              )
-
+revive :: Int -> Action s a
+revive n arr = do (vit, val) <- readArray arr n
+                  writeArray arr n (revive' vit, val)
+                  return i
+  where revive' n | n <= 0    = 1
+                  | otherwise = n
 
 -- zombie
 
 
 main :: IO ()
-main = print $ runST update
+main = print $ compute

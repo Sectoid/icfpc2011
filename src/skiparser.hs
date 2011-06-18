@@ -1,15 +1,14 @@
 module SkiParser
        where
 
-data FApp a b = FApp1 (a -> b) a
-              | FApp2 (a -> b -> c) a
-
-apply :: (FApp a b) -> b
-apply (FApp1 f x) = f x
-apply (FApp2 f x) = f x
-
---f :: a -> b
---f = s
+data Function a b c d = Value   a
+                      | Unary   (a -> b)
+                      | Binary  (a -> b -> c)
+                      | Ternary (a -> b -> c -> d)
+                        
+apply (Unary f)   x = Value  (f x)
+apply (Binary f)  x = Unary  (f x)
+apply (Ternary f) x = Binary (f x)
 
 i :: a -> a
 i = id

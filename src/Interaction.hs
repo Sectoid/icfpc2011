@@ -18,7 +18,11 @@ create (RAppValue value card) slot = Turn DRight slot card : create value slot
 
 -- TBD. Creates numeric value in specified slot
 createNumber :: Integer -> Integer -> [Turn]
-createNumber = undefined
+createNumber value slot | value == 0 = [Turn DRight slot Zero]
+                        | even value = createNumber (value `div` 2) slot
+                                       ++ [Turn DLeft slot Dbl]                                       
+                        | otherwise = createNumber (value - 1) slot 
+                                      ++ [Turn DRight slot Succ]
 
 -- Puts sequence of turns in empty slot
 inEmptySlot :: [Turn] -> Integer -> [Turn]

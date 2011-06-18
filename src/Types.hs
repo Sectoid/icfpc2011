@@ -18,4 +18,6 @@ data Card = I
 
 data Value = IntValue Integer
            | CardValue Card
-           | AppValue Card Value
+           | LAppValue Card Value
+           | RAppValue Value Card
+

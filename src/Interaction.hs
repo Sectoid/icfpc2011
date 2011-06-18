@@ -4,8 +4,10 @@ import LTG.Types
 
 data Direction = DLeft
                | DRight
+               deriving (Eq, Show)
 
 data Turn = Turn Direction Integer Card
+          deriving (Eq, Show)
 
 -- Returns squence of turns required to create value in certain slot
 create :: Value -> Integer -> [Turn]

@@ -24,6 +24,11 @@ createNumber value slot | value == 0 = [Turn DRight slot Zero]
                         | otherwise = createNumber (value - 1) slot 
                                       ++ [Turn DRight slot Succ]
 
+createNumberFromNumber :: Integer -> Integer -> Integer -> [Turn]
+createNumberFromNumber from to slot | from == to = []
+                                    | from < to = tail $ createNumber (to - from) slot
+                                    | otherwise = inEmptySlot (createNumber to slot) slot
+
 -- Puts sequence of turns in empty slot
 inEmptySlot :: [Turn] -> Integer -> [Turn]
 inEmptySlot turns slot = [Turn DLeft slot Put] ++ turns

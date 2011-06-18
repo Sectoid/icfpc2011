@@ -11,7 +11,8 @@ data Turn = Turn Direction Integer Card
 create :: Value -> Integer -> [Turn]
 create (IntValue value) slot = createNumber value slot
 create (CardValue value) slot = resetSlot slot ++ [Turn DRight slot value]
-create _ _ = undefined
+create (LAppValue card value) slot = Turn DLeft slot card : create value slot
+create (RAppValue value card) slot = Turn DRight slot card : create value slot
 
 -- TBD. Creates numeric value in specified slot
 createNumber :: Integer -> Integer -> [Turn]

@@ -25,7 +25,7 @@ createNumber value slot | value == 0 = [Turn DRight slot Zero]
                         | even value = createNumber (value `div` 2) slot
                                        ++ [Turn DLeft slot Dbl]                                       
                         | otherwise = createNumber (value - 1) slot 
-                                      ++ [Turn DRight slot Succ]
+                                      ++ [Turn DLeft slot Succ]
 
 createNumberFromNumber :: Integer -> Integer -> Integer -> [Turn]
 createNumberFromNumber from to slot | from == to = []

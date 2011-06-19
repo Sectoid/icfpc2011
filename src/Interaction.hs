@@ -122,3 +122,19 @@ rZombie = undefined
 rS = undefined
 rAttack = undefined
 rHelp = undefined
+
+applyNumber term num | num > 0 = applyNumber (AppValue (AppValue (CardValue S) (AppValue (CardValue K) term)) (CardValue Succ)) (num - 1) 
+                     | num == 0 = AppValue term (CardValue Zero)
+
+applyTermToSlot term slotNum = applyNumber (AppValue (AppValue (CardValue S) (AppValue (CardValue K) term)) (CardValue Get)) slotNum
+
+cA = AppValue (CardValue S) (AppValue (CardValue K) (CardValue I))
+
+-- loopSlot is the slot where the whole loop should be built 
+-- tempSlot is the temp slot for loop composing
+-- action slot should contain action term without last application 
+-- lastParamSlot should contain (K lastParam) term
+wunderWaffle loopSlot tempSlot actionSlot lastParamSlot = 
+  inEmptySlot (create (AppValue (AppValue (CardValue S) (applyTermToSlot (AppValue (CardValue S) (AppValue (CardValue K) (applyTermToSlot cA actionSlot))) lastParamSlot)) (CardValue I)) tempSlot) tempSlot 
+  ++ inEmptySlot (create (applyTermToSlot (applyTermToSlot (AppValue (CardValue S) (CardValue Get)) tempSlot) loopSlot) loopSlot) loopSlot
+  

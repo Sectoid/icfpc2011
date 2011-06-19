@@ -35,13 +35,23 @@ parseCard s | matchCard s I      = I
             | matchCard s Revive = Revive
             | matchCard s Zombie = Zombie
             | otherwise = error "Card type not supported"
-                          
+
+-- Interaction with the server needed for the submitting tuns list
 walkPath :: [Turn] -> IO ()
 walkPath turns = mapM_ walkTurn turns
 
+-- Stub. It should really read the opponent's commands and choose adequate strategy
+readTurn :: IO ()
+readTurn = do rl   <- getInt
+              card <- getLine
+              i    <- getLine
+              return ()
+
 walkTurn :: Turn -> IO ()
-walkTurn (Turn dir x y) | dir == DLeft  = walkL x y
-                        | dir == DRight = walkR x y
+walkTurn (Turn dir x y) | dir == DLeft  = do walkL x y
+                                             readTurn
+                        | dir == DRight = do walkR x y
+                                             readTurn
                         | otherwise = error "Turn type not supported"
 
 walkL, walkR :: Integer -> Card -> IO ()

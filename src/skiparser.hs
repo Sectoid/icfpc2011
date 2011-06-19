@@ -2,6 +2,7 @@ module SkiParser
        where
 
 import System
+import System.Random
 
 import qualified Data.Sequence as S
 
@@ -180,7 +181,14 @@ compute = runST ( do arr <- cells :: ST s (STArray s Int (Int, Value))
                      revive 10 arr
                      readArray arr 10
                 )
+          
+fireWunderWaffle :: Int -> Integer -> IO ()
+fireWunderWaffle s i = do x <- getStdRandom (randomR (0, 32))
+                          y <- getStdRandom (randomR (33, 65))
+                          z <- getStdRandom (randomR (66, 99))
+                          l <- getStdRandom (randomR (100, 255))
+                          walkPath s $ killStep 1000 (i + 100) i l (x, y, z)
 
 main :: IO ()
 main = do side <- (liftM (read . head)) getArgs :: IO Int
-          walkPath side $ create (IntValue 4) 1
+          fireWunderWaffle side 0

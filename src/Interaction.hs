@@ -59,6 +59,7 @@ tryReduce (Slots (AppValue (CardValue Put) value) st) = doR rPut value st
 tryReduce (Slots (AppValue (CardValue Inc) value) st) = doR rInc value st
 tryReduce (Slots (AppValue (CardValue Dec) value) st) = doR rDec value st
 tryReduce (Slots (AppValue (CardValue Copy) value) st) = doR rCopy value st
+tryReduce (Slots (AppValue (CardValue Revive) value) st) = doR rRevive value st
 
 --- Binary cards
 tryReduce (Slots (AppValue (AppValue (CardValue K) v1) v2) st) = doR2 rK v1 v2 st
@@ -71,6 +72,14 @@ tryReduce term@(Slots (AppValue (CardValue Zombie) _) st) = Just term
 tryReduce (Slots (AppValue (AppValue (AppValue (CardValue S) v1) v2) v3) st) = doR3 rS v1 v2 v3 st
 tryReduce term@(Slots (AppValue (AppValue (CardValue S) _) _) st) = Just term
 tryReduce term@(Slots (AppValue (CardValue S) _) st) = Just term
+
+tryReduce (Slots (AppValue (AppValue (AppValue (CardValue Attack) v1) v2) v3) st) = doR3 rAttack v1 v2 v3 st
+tryReduce term@(Slots (AppValue (AppValue (CardValue Attack) _) _) st) = Just term
+tryReduce term@(Slots (AppValue (CardValue Attack) _) st) = Just term
+
+tryReduce (Slots (AppValue (AppValue (AppValue (CardValue Help) v1) v2) v3) st) = doR3 rHelp v1 v2 v3 st
+tryReduce term@(Slots (AppValue (AppValue (CardValue Help) _) _) st) = Just term
+tryReduce term@(Slots (AppValue (CardValue Help) _) st) = Just term
 
 --- FAIL CASE
 tryReduce _ = undefined
@@ -101,6 +110,9 @@ rPut = undefined
 rInc = undefined
 rDec = undefined
 rCopy = undefined
+rRevive = undefined
 rK = undefined
 rZombie = undefined
 rS = undefined
+rAttack = undefined
+rHelp = undefined

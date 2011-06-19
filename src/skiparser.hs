@@ -46,12 +46,15 @@ readTurn = do rl   <- getInt
               card <- getLine
               i    <- getLine
               return ()
+              
+readTurn' :: IO ()
+readTurn' = return ()
 
 walkTurn :: Turn -> IO ()
 walkTurn (Turn dir x y) | dir == DLeft  = do walkL x y
-                                             readTurn
+                                             readTurn'
                         | dir == DRight = do walkR x y
-                                             readTurn
+                                             readTurn'
                         | otherwise = error "Turn type not supported"
 
 walkL, walkR :: Integer -> Card -> IO ()
@@ -171,4 +174,4 @@ compute = runST ( do arr <- cells :: ST s (STArray s Int (Int, Value))
                 )
 
 main :: IO ()
-main = print $ compute
+main = walkPath $ createNumber 2 1

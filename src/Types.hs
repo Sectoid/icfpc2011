@@ -1,4 +1,4 @@
-module LTG.Types where
+module Types where
 
 data Card = I
           | S

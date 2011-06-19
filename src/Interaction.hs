@@ -1,6 +1,6 @@
-module LTG.Interaction where
+module Interaction where
 
-import LTG.Types
+import Types
 
 data Direction = DLeft
                | DRight

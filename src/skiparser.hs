@@ -1,6 +1,8 @@
 module SkiParser
        where
 
+import System
+
 import qualified Data.Sequence as S
 
 import Control.Monad
@@ -37,8 +39,8 @@ parseCard s | matchCard s I      = I
             | otherwise = error "Card type not supported"
 
 -- Interaction with the server needed for the submitting tuns list
-walkPath :: [Turn] -> IO ()
-walkPath turns = mapM_ walkTurn turns
+walkPath :: Int -> [Turn] -> IO ()
+walkPath side turns = mapM_ (walkTurn side) turns
 
 -- Stub. It should really read the opponent's commands and choose adequate strategy
 readTurn :: IO ()
@@ -48,14 +50,20 @@ readTurn = do rl   <- getInt
               return ()
               
 readTurn' :: IO ()
-readTurn' = return ()
+readTurn' = putStrLn "reading opponent"
 
-walkTurn :: Turn -> IO ()
-walkTurn (Turn dir x y) | dir == DLeft  = do walkL x y
-                                             readTurn'
-                        | dir == DRight = do walkR x y
-                                             readTurn'
-                        | otherwise = error "Turn type not supported"
+walkTurn :: Int -> Turn -> IO ()
+walkTurn side (Turn dir x y) | dir == DLeft  = do walkL' side x y
+                             | dir == DRight = do walkR' side x y
+                             | otherwise = error "Turn type not supported"
+  where walkL' side x y | side == 0 = do walkL x y
+                                         readTurn'
+                        | side == 1 = do readTurn'
+                                         walkL x y
+        walkR' side x y | side == 0 = do walkR x y
+                                         readTurn'
+                        | side == 1 = do readTurn'
+                                         walkR x y
 
 walkL, walkR :: Integer -> Card -> IO ()
 walkL i card = do putStrLn "1"
@@ -174,4 +182,5 @@ compute = runST ( do arr <- cells :: ST s (STArray s Int (Int, Value))
                 )
 
 main :: IO ()
-main = walkPath $ createNumber 2 1
+main = do side <- (liftM (read . head)) getArgs :: IO Int
+          walkPath side $ create (IntValue 4) 1

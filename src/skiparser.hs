@@ -1,7 +1,8 @@
-module SkiParser
+module Main
        where
 
 import System
+import System.IO
 import System.Random
 
 import qualified Data.Sequence as S
@@ -190,5 +191,8 @@ fireWunderWaffle s i = do x <- getStdRandom (randomR (0, 32))
                           walkPath s $ killStep 1000 (i + 100) i l (x, y, z)
 
 main :: IO ()
-main = do side <- (liftM (read . head)) getArgs :: IO Int
-          fireWunderWaffle side 0
+main = do 
+  hSetBuffering stdout LineBuffering
+  hSetBuffering stdin LineBuffering
+  side <- (liftM (read . head)) getArgs :: IO Int
+  fireWunderWaffle side 0

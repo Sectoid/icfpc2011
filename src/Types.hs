@@ -19,6 +19,5 @@ data Card = I
 
 data Value = IntValue Integer
            | CardValue Card
-           | LAppValue Card Value
-           | RAppValue Value Card
+           | AppValue Value Value
            deriving (Eq, Show)

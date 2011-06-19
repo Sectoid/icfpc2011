@@ -46,13 +46,14 @@ walkPath side turns = mapM_ (walkTurn side) turns
 
 -- Stub. It should really read the opponent's commands and choose adequate strategy
 readTurn :: IO ()
-readTurn = do rl   <- getInt
+readTurn = do rl   <- getLine
               card <- getLine
               i    <- getLine
               return ()
               
-readTurn' :: IO ()
-readTurn' = putStrLn "reading opponent"
+readTurn' = readTurn
+-- readTurn' :: IO ()
+-- readTurn' = putStrLn "reading opponent"
 
 walkTurn :: Int -> Turn -> IO ()
 walkTurn side (Turn dir x y) | dir == DLeft  = do walkL' side x y
@@ -194,8 +195,7 @@ fireWunderWaffles :: Int -> IO ()
 fireWunderWaffles s = mapM_ (fireWunderWaffle s) [0..155]
 
 nopSled :: Int -> IO ()
-nopSled s = do walkPath s $ create (CardValue Put) 0
-               walkPath s $ create (AppValue 0 (CardValue I)) 0
+nopSled s = do walkPath s [Turn DRight 0 I]
                nopSled s
 
 main :: IO ()
@@ -204,4 +204,5 @@ main = do
   hSetBuffering stdin LineBuffering
   side <- (liftM (read . head)) getArgs :: IO Int
   fireWunderWaffles side
-  nopSled
+  walkPath side $ (create (CardValue Put) 0)
+  nopSled side

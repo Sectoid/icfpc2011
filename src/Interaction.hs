@@ -138,3 +138,14 @@ wunderWaffle loopSlot tempSlot actionSlot lastParamSlot =
   inEmptySlot (create (AppValue (AppValue (CardValue S) (applyTermToSlot (AppValue (CardValue S) (AppValue (CardValue K) (applyTermToSlot cA actionSlot))) lastParamSlot)) (CardValue I)) tempSlot) tempSlot 
   ++ inEmptySlot (create (applyTermToSlot (applyTermToSlot (AppValue (CardValue S) (CardValue Get)) tempSlot) loopSlot) loopSlot) loopSlot
   
+killStep hp sacrifizeSlot targetSlot loopSlot (ts1, ts2, ts3) = 
+  inEmptySlot (createNumber (255 - targetSlot) ts2) ts2 
+  ++
+  inEmptySlot (create (applyTermToSlot (AppValue (CardValue Attack) (IntValue sacrifizeSlot)) ts2) ts1) ts1
+  ++
+  inEmptySlot (create (AppValue (CardValue K) (IntValue hp)) ts2) ts2
+  ++
+  wunderWaffle loopSlot ts3 ts1 ts2
+  ++
+  inEmptySlot (create (AppValue (CardValue Revive) (IntValue sacrifizeSlot)) ts1) ts1
+  

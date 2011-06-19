@@ -189,10 +189,13 @@ fireWunderWaffle s i = do x <- getStdRandom (randomR (0, 32))
                           z <- getStdRandom (randomR (66, 99))
                           l <- getStdRandom (randomR (100, 255))
                           walkPath s $ killStep 1000 (i + 100) i l (x, y, z)
+                          
+fireWunderWaffles :: Int -> IO ()
+fireWunderWaffles s = mapM_ (fireWunderWaffle s) [0..155]
 
 main :: IO ()
 main = do 
   hSetBuffering stdout LineBuffering
   hSetBuffering stdin LineBuffering
   side <- (liftM (read . head)) getArgs :: IO Int
-  fireWunderWaffle side 0
+  fireWunderWaffles side

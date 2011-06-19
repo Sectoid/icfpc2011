@@ -102,16 +102,21 @@ doR3 f v1 v2 v3 st = do
   let v3'' = (Slots v3' st''')
   f v1'' v2'' v3''
 
--- Reduces succ
-rSucc = undefined
-rDbl = undefined
+rSucc v@(Slots (IntValue n) st) | n < 65535 = Just (Slots (IntValue (n+1)) st) 
+                                | otherwise = Just v
+rSucc _ = Nothing
+
+rDbl v@(Slots (IntValue n) st) | n < 32768 = Just (Slots (IntValue (n*2)) st) 
+                               | otherwise = Just (Slots (IntValue 65535) st)
+rDbl _ = Nothing
+
 rGet = undefined
 rPut = undefined
 rInc = undefined
 rDec = undefined
 rCopy = undefined
 rRevive = undefined
-rK = undefined
+rK v1 v2 = Just v1
 rZombie = undefined
 rS = undefined
 rAttack = undefined

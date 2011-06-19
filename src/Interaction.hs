@@ -13,7 +13,8 @@ data Turn = Turn Direction Integer Card
 create :: Value -> Integer -> [Turn]
 create (IntValue value) slot = createNumber value slot
 create (CardValue value) slot = [Turn DRight slot value]
--- create (AppValue (CardValue c) value) slot = Turn DLeft slot (create value slot)
+create (AppValue (CardValue c) value) slot = create value slot ++ [Turn DLeft slot c] 
+create (AppValue value (CardValue c)) slot = create value slot ++ [Turn DRight slot c] 
 
 -- create (LAppValue card value) slot = Turn DLeft slot card : create value slot
 -- create (RAppValue value card) slot = Turn DRight slot card : create value slot

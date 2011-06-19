@@ -193,9 +193,15 @@ fireWunderWaffle s i = do x <- getStdRandom (randomR (0, 32))
 fireWunderWaffles :: Int -> IO ()
 fireWunderWaffles s = mapM_ (fireWunderWaffle s) [0..155]
 
+nopSled :: Int -> IO ()
+nopSled s = do walkPath s $ create (CardValue Put) 0
+               walkPath s $ create (AppValue 0 (CardValue I)) 0
+               nopSled s
+
 main :: IO ()
 main = do 
   hSetBuffering stdout LineBuffering
   hSetBuffering stdin LineBuffering
   side <- (liftM (read . head)) getArgs :: IO Int
   fireWunderWaffles side
+  nopSled

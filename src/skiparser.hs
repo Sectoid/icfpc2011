@@ -78,6 +78,22 @@ get :: Int -> Value
 get n = snd $ runST ( do arr <- cells
                          readArray arr n
                     )
+        
+getVit :: Int -> STArray s Int (Int, Value) -> ST s Int
+getVit n arr = do val <- readArray arr n
+                  return (fst val)
+                  
+setVit :: Int -> Int -> STArray s Int (Int, Value) -> ST s ()
+setVit n vit arr = do (vit', val) <- readArray arr n
+                      writeArray arr n (vit, val)
+               
+getVal :: Int -> STArray s Int (Int, Value) -> ST s Value
+getVal n arr = do val <- readArray arr n
+                  return (snd val)
+                  
+setVal :: Int -> Value -> STArray s Int (Int, Value) -> ST s ()
+setVal n val arr = do (vit, val') <- readArray arr n
+                      writeArray arr n (vit, val)
 
 put :: a -> (a -> a)
 put _ = i
@@ -122,6 +138,7 @@ revive n arr = do (vit, val) <- readArray arr n
 compute = runST ( do arr <- cells :: ST s (STArray s Int (Int, Value))
                      inc 10 arr
                      inc 10 arr
+                     setVit 10 0 arr
                      revive 10 arr
                      readArray arr 10
                 )

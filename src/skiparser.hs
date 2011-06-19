@@ -35,6 +35,23 @@ parseCard s | matchCard s I      = I
             | matchCard s Revive = Revive
             | matchCard s Zombie = Zombie
             | otherwise = error "Card type not supported"
+                          
+walkPath :: [Turn] -> IO ()
+walkPath turns = mapM_ walkTurn turns
+
+walkTurn :: Turn -> IO ()
+walkTurn (Turn dir x y) | dir == DLeft  = walkL x y
+                        | dir == DRight = walkR x y
+                        | otherwise = error "Turn type not supported"
+
+walkL, walkR :: Integer -> Card -> IO ()
+walkL i card = do putStrLn "1"
+                  putStrLn $ show card
+                  putStrLn $ show i
+
+walkR i card = do putStrLn "2"
+                  putStrLn $ show i
+                  putStrLn $ show card
 
 getInt :: IO Int
 getInt = readLn
